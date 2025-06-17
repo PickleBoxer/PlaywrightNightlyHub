@@ -85,7 +85,7 @@ final class ReportSuiteBuilder
         $query = Suite::with(['tests'])
             ->where('execution_id', $execution->id);
 
-        if ($this->filterSuiteId) {
+        if ($this->filterSuiteId !== null && $this->filterSuiteId !== 0) {
             $query->where('id', $this->filterSuiteId);
         }
 
@@ -104,7 +104,7 @@ final class ReportSuiteBuilder
                 }
 
                 if ($this->filterSearch &&
-                    ! str_contains(mb_strtolower($test->title), mb_strtolower($this->filterSearch)) &&
+                    ! str_contains(mb_strtolower((string) $test->title), mb_strtolower($this->filterSearch)) &&
                     ! str_contains(mb_strtolower($test->error_message ?? ''), mb_strtolower($this->filterSearch))
                 ) {
                     continue;
@@ -218,9 +218,7 @@ final class ReportSuiteBuilder
         ];
 
         if ($this->filterEmptyArrays) {
-            return array_filter($data, function ($value): bool {
-                return ! is_array($value) || ! empty($value);
-            });
+            return array_filter($data, fn($value): bool => ! is_array($value) || $value !== []);
         }
 
         return $data;

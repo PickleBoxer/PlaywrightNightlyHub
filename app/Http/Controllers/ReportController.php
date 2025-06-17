@@ -42,17 +42,11 @@ final class ReportController extends Controller
             ->withQueryString();
 
         // Cache filter options for better performance
-        $platforms = Cache::remember('execution_platforms', 300, function () {
-            return Execution::distinct('platform')->pluck('platform')->sort()->values();
-        });
+        $platforms = Cache::remember('execution_platforms', 300, fn() => Execution::distinct('platform')->pluck('platform')->sort()->values());
 
-        $campaigns = Cache::remember('execution_campaigns', 300, function () {
-            return Execution::distinct('campaign')->pluck('campaign')->sort()->values();
-        });
+        $campaigns = Cache::remember('execution_campaigns', 300, fn() => Execution::distinct('campaign')->pluck('campaign')->sort()->values());
 
-        $versions = Cache::remember('execution_versions', 300, function () {
-            return $this->executionRepository->findAllVersions();
-        });
+        $versions = Cache::remember('execution_versions', 300, fn(): array => $this->executionRepository->findAllVersions());
 
         return Inertia::render('reports/index', [
             'reports' => (new ExecutionCollection($executions)),

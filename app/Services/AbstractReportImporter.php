@@ -10,7 +10,7 @@ use App\Repositories\TestRepository;
 
 abstract class AbstractReportImporter
 {
-    public const REGEX_FILE = '/([0-9]{4}-[0-9]{2}-[0-9]{2})-(.*)?\.json/';
+    public const REGEX_FILE = '/(\d{4}-\d{2}-\d{2})-(.*)?\.json/';
 
     public const FILTER_PLATFORMS = ['chromium', 'firefox', 'edge', 'cli'];
 
@@ -66,12 +66,12 @@ abstract class AbstractReportImporter
             $execution->start_date
         );
 
-        if (! $executionPrevious) {
+        if (!$executionPrevious instanceof \App\Models\Execution) {
             return $execution;
         }
 
         $data = $this->testRepository->findComparisonData($execution, $executionPrevious);
-        if (empty($data)) {
+        if ($data === []) {
             return $execution;
         }
 

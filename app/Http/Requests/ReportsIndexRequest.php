@@ -30,8 +30,8 @@ final class ReportsIndexRequest extends FormRequest
         $validated = parent::validated($key, $default);
 
         // Set defaults
-        $validated['per_page'] = $validated['per_page'] ?? 20;
-        $validated['page'] = $validated['page'] ?? 1;
+        $validated['per_page'] ??= 20;
+        $validated['page'] ??= 1;
 
         return $key ? ($validated[$key] ?? $default) : $validated;
     }

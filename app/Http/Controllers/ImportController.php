@@ -14,7 +14,7 @@ use Illuminate\Http\Response;
 
 final class ImportController extends Controller
 {
-    private string $nightlyToken;
+    private readonly string $nightlyToken;
 
     public function __construct(
         private readonly ReportUploadService $uploadService

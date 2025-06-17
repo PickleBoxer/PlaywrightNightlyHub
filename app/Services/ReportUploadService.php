@@ -13,13 +13,13 @@ use Illuminate\Support\Facades\Storage;
 
 use function str_replace;
 
-final class ReportUploadService
+final readonly class ReportUploadService
 {
     private string $reportPath;
 
     public function __construct(
-        private readonly ExecutionRepository $executionRepository,
-        private readonly ReportPlaywrightImporter $playwrightImporter
+        private ExecutionRepository $executionRepository,
+        private ReportPlaywrightImporter $playwrightImporter
     ) {
         $this->reportPath = config('app.nightly_report_path', 'reports');
     }

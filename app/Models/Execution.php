@@ -88,7 +88,7 @@ final class Execution extends Model
     protected function search(Builder $query, ?string $search): void
     {
         if ($search) {
-            $query->where(function ($q) use ($search) {
+            $query->where(function ($q) use ($search): void {
                 $q->where('version', 'like', "%{$search}%")
                     ->orWhere('campaign', 'like', "%{$search}%")
                     ->orWhere('platform', 'like', "%{$search}%")

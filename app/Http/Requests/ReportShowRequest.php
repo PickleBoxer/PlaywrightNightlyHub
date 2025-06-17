@@ -36,7 +36,7 @@ final class ReportShowRequest extends FormRequest
 
         // Set defaults
         if (is_array($validated)) {
-            $validated['filter_state'] = $validated['filter_state'] ?? ReportSuiteBuilder::FILTER_STATES;
+            $validated['filter_state'] ??= ReportSuiteBuilder::FILTER_STATES;
         }
 
         return $key ? ($validated[$key] ?? $default) : $validated;

@@ -103,7 +103,7 @@ final class ReportPlaywrightImporter extends AbstractReportImporter
 
             foreach ($attachments as $attachment) {
                 if ($attachment->name === 'testInfo') {
-                    $info = json_decode($attachment->body);
+                    $info = json_decode((string) $attachment->body);
                     $identifier = $info->testId ?? '';
                     break;
                 }

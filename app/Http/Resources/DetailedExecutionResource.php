@@ -13,9 +13,7 @@ final class DetailedExecutionResource extends JsonResource
     /**
      * @var array<int, string>
      */
-    private array $filterStates;
-
-    private ?string $search;
+    private readonly array $filterStates;
 
     /**
      * Create a new resource instance.
@@ -23,11 +21,10 @@ final class DetailedExecutionResource extends JsonResource
      * @param  mixed  $resource
      * @param  array<int, string>  $filterStates
      */
-    public function __construct($resource, array $filterStates = [], ?string $search = null)
+    public function __construct($resource, array $filterStates = [], private readonly ?string $search = null)
     {
         parent::__construct($resource);
-        $this->filterStates = $filterStates ?: ReportSuiteBuilder::FILTER_STATES;
-        $this->search = $search;
+        $this->filterStates = $filterStates !== [] ? $filterStates : ReportSuiteBuilder::FILTER_STATES;
     }
 
     /**

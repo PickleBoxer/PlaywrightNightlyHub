@@ -17,7 +17,7 @@ final class TestRepository
                 't2.state as current_test_state',
             ])
             ->join('suites as s1', 's1.id', '=', 't1.suite_id')
-            ->leftJoin('tests as t2', function ($join) {
+            ->leftJoin('tests as t2', function ($join): void {
                 $join->on('t2.identifier', '=', 't1.identifier')
                     ->whereNotNull('t2.identifier');
             })
