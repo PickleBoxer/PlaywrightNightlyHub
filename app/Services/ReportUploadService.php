@@ -1,13 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Execution;
 use App\Repositories\ExecutionRepository;
+use DateTime;
+use DateTimeImmutable;
+use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-class ReportUploadService
+use function str_replace;
+
+final class ReportUploadService
 {
     private string $reportPath;
 
@@ -24,7 +31,7 @@ class ReportUploadService
      * @param  array<string, mixed>  $options
      * @return array<string, mixed>
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function uploadReport(UploadedFile $file, array $options = []): array
     {
@@ -35,7 +42,7 @@ class ReportUploadService
         $path = Storage::putFileAs($this->reportPath, $file, $filename);
 
         if (! $path) {
-            throw new \Exception('Failed to store the uploaded file.');
+            throw new Exception('Failed to store the uploaded file.');
         }
 
         return [
@@ -51,18 +58,18 @@ class ReportUploadService
      *
      * @param  array<string, mixed>  $options
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function processReport(string $filename, array $options = []): Execution
     {
         $fileContent = Storage::get($this->reportPath.'/'.$filename);
         if (! $fileContent) {
-            throw new \Exception(sprintf('Could not read the file %s', $filename));
+            throw new Exception(sprintf('Could not read the file %s', $filename));
         }
 
         $jsonContent = json_decode($fileContent);
         if (! $jsonContent) {
-            throw new \Exception(sprintf('Could not parse the file %s', $filename));
+            throw new Exception(sprintf('Could not parse the file %s', $filename));
         }
 
         // Extract information from filename or use provided options
@@ -72,9 +79,9 @@ class ReportUploadService
         $version = $options['version'] ?? $this->extractVersionFromFilename($filename);
 
         // Create DateTime from report or use current time
-        $startDate = \DateTime::createFromFormat(
-            \DateTime::RFC3339_EXTENDED,
-            $jsonContent->stats->start ?? $jsonContent->stats->startTime ?? date(\DateTime::RFC3339_EXTENDED)
+        $startDate = DateTimeImmutable::createFromFormat(
+            DateTime::RFC3339_EXTENDED,
+            $jsonContent->stats->start ?? $jsonContent->stats->startTime ?? date(DateTime::RFC3339_EXTENDED)
         );
 
         // Check if similar report exists if not forcing
@@ -87,7 +94,7 @@ class ReportUploadService
                 $startDate->format('Y-m-d')
             )
         ) {
-            throw new \Exception(sprintf(
+            throw new Exception(sprintf(
                 'A similar entry was found (criteria: version %s, platform %s, campaign %s, database %s, date %s).',
                 $version,
                 $platform,
@@ -112,18 +119,18 @@ class ReportUploadService
     /**
      * Extract version from filename using regex
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function extractVersionFromFilename(string $filename): string
     {
         preg_match(AbstractReportImporter::REGEX_FILE, $filename, $matchesVersion);
         if (! isset($matchesVersion[1])) {
-            throw new \Exception('Could not retrieve version from filename');
+            throw new Exception('Could not retrieve version from filename');
         }
 
-        $version = \str_replace('_', ' ', $matchesVersion[1]);
-        if (strlen($version) < 1) {
-            throw new \Exception(sprintf(
+        $version = str_replace('_', ' ', $matchesVersion[1]);
+        if (mb_strlen($version) < 1) {
+            throw new Exception(sprintf(
                 'Version found not correct (%s) from filename %s',
                 $version,
                 $filename

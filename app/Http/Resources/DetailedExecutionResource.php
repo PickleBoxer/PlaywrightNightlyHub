@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use App\Services\ReportSuiteBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DetailedExecutionResource extends JsonResource
+final class DetailedExecutionResource extends JsonResource
 {
     /**
      * @var array<int, string>

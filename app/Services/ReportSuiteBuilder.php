@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Execution;
 use App\Models\Suite;
 use App\Models\Test;
 
-class ReportSuiteBuilder
+final class ReportSuiteBuilder
 {
     public const FILTER_STATE_FAILED = 'failed';
 
@@ -102,8 +104,8 @@ class ReportSuiteBuilder
                 }
 
                 if ($this->filterSearch &&
-                    ! str_contains(strtolower($test->title), strtolower($this->filterSearch)) &&
-                    ! str_contains(strtolower($test->error_message ?? ''), strtolower($this->filterSearch))
+                    ! str_contains(mb_strtolower($test->title), mb_strtolower($this->filterSearch)) &&
+                    ! str_contains(mb_strtolower($test->error_message ?? ''), mb_strtolower($this->filterSearch))
                 ) {
                     continue;
                 }

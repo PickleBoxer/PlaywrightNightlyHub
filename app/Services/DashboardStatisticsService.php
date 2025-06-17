@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Execution;
 use Carbon\Carbon;
 
-class DashboardStatisticsService
+final class DashboardStatisticsService
 {
     /**
      * Calculate dashboard statistics

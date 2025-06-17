@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Execution;
@@ -79,13 +81,13 @@ abstract class AbstractReportImporter
         $execution->equal_since_last = 0;
 
         foreach ($data as $datum) {
-            if ($datum->old_test_state == 'failed' && $datum->current_test_state == 'failed') {
+            if ($datum->old_test_state === 'failed' && $datum->current_test_state === 'failed') {
                 $execution->equal_since_last += 1;
             }
-            if ($datum->old_test_state == 'failed' && $datum->current_test_state != 'failed') {
+            if ($datum->old_test_state === 'failed' && $datum->current_test_state !== 'failed') {
                 $execution->fixed_since_last += 1;
             }
-            if ($datum->old_test_state != 'failed' && $datum->current_test_state == 'failed') {
+            if ($datum->old_test_state !== 'failed' && $datum->current_test_state === 'failed') {
                 $execution->broken_since_last += 1;
             }
         }

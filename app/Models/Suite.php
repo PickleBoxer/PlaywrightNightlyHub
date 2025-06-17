@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -7,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Suite extends Model
+final class Suite extends Model
 {
     use HasFactory;
 
@@ -54,11 +56,11 @@ class Suite extends Model
 
     public function childSuites()
     {
-        return $this->hasMany(Suite::class, 'parent_id');
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     public function parentSuite()
     {
-        return $this->belongsTo(Suite::class, 'parent_id');
+        return $this->belongsTo(self::class, 'parent_id');
     }
 }

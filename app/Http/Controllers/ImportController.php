@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UploadReportRequest;
 use App\Http\Resources\UploadReportResource;
 use App\Services\ReportUploadService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class ImportController extends Controller
+final class ImportController extends Controller
 {
     private string $nightlyToken;
 
@@ -62,7 +65,7 @@ class ImportController extends Controller
                 'status' => 'ok',
                 'report' => new UploadReportResource($execution),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
@@ -92,7 +95,7 @@ class ImportController extends Controller
                 'path' => $result['path'],
                 'message' => 'Report uploaded successfully',
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'message' => 'Failed to upload file: '.$e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);

@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repositories;
 
 use App\Models\Execution;
+use DateTimeImmutable;
 
-class ExecutionRepository
+final class ExecutionRepository
 {
     public function findByNightly(
         string $version,
@@ -28,7 +31,7 @@ class ExecutionRepository
         string $platform,
         string $campaign,
         string $database,
-        \DateTime $dateUntil
+        DateTimeImmutable $dateUntil
     ): ?Execution {
         return Execution::query()
             ->where('version', $version)

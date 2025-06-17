@@ -1,13 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Models\Execution;
 use App\Models\Suite;
 use App\Models\Test;
+use DateTimeImmutable;
+use Exception;
 use Illuminate\Support\Facades\DB;
+use Str;
 
-class ReportPlaywrightImporter extends AbstractReportImporter
+final class ReportPlaywrightImporter extends AbstractReportImporter
 {
     public const FILTER_CAMPAIGNS = [
         'blockwishlist',
@@ -22,7 +27,7 @@ class ReportPlaywrightImporter extends AbstractReportImporter
         string $database,
         string $campaign,
         string $version,
-        \DateTime $startDate,
+        DateTimeImmutable $startDate,
         object $jsonContent,
     ): Execution {
         $endDate = clone $startDate;
@@ -66,7 +71,7 @@ class ReportPlaywrightImporter extends AbstractReportImporter
             $execution->save();
 
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             throw $e;
         }
@@ -78,7 +83,7 @@ class ReportPlaywrightImporter extends AbstractReportImporter
     {
         $executionSuite = new Suite;
         $executionSuite->execution_id = $execution->id;
-        $executionSuite->uuid = \Str::uuid()->toString(); // To be generated
+        $executionSuite->uuid = Str::uuid()->toString(); // To be generated
         $executionSuite->title = $suite->title;
         $executionSuite->has_suites = false;
         $executionSuite->has_tests = ! empty($suite->specs);

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
 use App\Services\ReportSuiteBuilder;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ReportShowRequest extends FormRequest
+final class ReportShowRequest extends FormRequest
 {
     public function authorize(): bool
     {

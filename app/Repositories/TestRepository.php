@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repositories;
 
 use App\Models\Execution;
 use Illuminate\Support\Facades\DB;
 
-class TestRepository
+final class TestRepository
 {
     public function findComparisonData(Execution $current, Execution $previous): array
     {

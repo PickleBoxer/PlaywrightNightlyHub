@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ReportShowRequest;
@@ -14,7 +16,7 @@ use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class ReportController extends Controller
+final class ReportController extends Controller
 {
     public function __construct(
         private readonly ExecutionRepository $executionRepository,
