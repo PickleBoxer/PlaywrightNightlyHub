@@ -123,4 +123,7 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'nightly_token' => env('NIGHTLY_TOKEN', ''),
+    'nightly_report_path' => env('NIGHTLY_REPORT_PATH', storage_path('app/reports/')),
+
 ];
