@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Execution;
-use DateTimeImmutable;
+use DateTime;
 
 final class ExecutionRepository
 {
@@ -31,7 +31,7 @@ final class ExecutionRepository
         string $platform,
         string $campaign,
         string $database,
-        DateTimeImmutable $dateUntil
+        DateTime $dateUntil
     ): ?Execution {
         return Execution::query()
             ->where('version', $version)

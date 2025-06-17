@@ -7,7 +7,6 @@ namespace App\Services;
 use App\Models\Execution;
 use App\Repositories\ExecutionRepository;
 use DateTime;
-use DateTimeImmutable;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -79,10 +78,13 @@ final class ReportUploadService
         $version = $options['version'] ?? $this->extractVersionFromFilename($filename);
 
         // Create DateTime from report or use current time
-        $startDate = DateTimeImmutable::createFromFormat(
-            DateTime::RFC3339_EXTENDED,
-            $jsonContent->stats->start ?? $jsonContent->stats->startTime ?? date(DateTime::RFC3339_EXTENDED)
-        );
+        $startDateString = $jsonContent->stats->start ?? $jsonContent->stats->startTime ?? date(DateTime::RFC3339_EXTENDED);
+        $startDate = DateTime::createFromFormat(DateTime::RFC3339_EXTENDED, $startDateString);
+
+        if ($startDate === false) {
+            // Fallback to current time if parsing fails
+            $startDate = new DateTime();
+        }
 
         // Check if similar report exists if not forcing
         if (

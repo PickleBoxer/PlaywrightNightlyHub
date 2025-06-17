@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Models\Execution;
 use App\Models\Suite;
 use App\Models\Test;
-use DateTimeImmutable;
+use DateTime;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Str;
@@ -27,7 +27,7 @@ final class ReportPlaywrightImporter extends AbstractReportImporter
         string $database,
         string $campaign,
         string $version,
-        DateTimeImmutable $startDate,
+        DateTime $startDate,
         object $jsonContent,
     ): Execution {
         $endDate = clone $startDate;
@@ -83,7 +83,7 @@ final class ReportPlaywrightImporter extends AbstractReportImporter
     {
         $executionSuite = new Suite;
         $executionSuite->execution_id = $execution->id;
-        $executionSuite->uuid = Str::uuid()->toString(); // To be generated
+        $executionSuite->uuid = Str::uuid()->toString();
         $executionSuite->title = $suite->title;
         $executionSuite->has_suites = false;
         $executionSuite->has_tests = ! empty($suite->specs);
@@ -125,7 +125,7 @@ final class ReportPlaywrightImporter extends AbstractReportImporter
 
             $test = new Test;
             $test->suite_id = $executionSuite->id;
-            $test->uuid = ''; // To be generated
+            $test->uuid = Str::uuid()->toString();
             $test->title = $spec->title;
             $test->duration = $spec->tests[0]->results[0]->duration;
             $test->identifier = $identifier;
