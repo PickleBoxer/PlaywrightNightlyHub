@@ -42,6 +42,7 @@ abstract class AbstractReportImporter
             if (str_contains($filename, 'modules/ps_emailsubscription')) {
                 return 'ps_emailsubscription';
             }
+            return 'unknown';
         } elseif ($type === 'file') {
             // Get the file name without the campaign part
             $parts = explode('/', $filename);

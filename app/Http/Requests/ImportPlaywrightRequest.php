@@ -8,23 +8,30 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Response;
 
-final class UploadReportRequest extends FormRequest
+class ImportPlaywrightRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [
             'token' => ['required', 'string'],
-            'report' => [
-                'required',
-                'file',
-                'mimes:json',
-                'max:10240', // 10MB max size
-            ],
+            'filename' => ['required', 'string'],
+            'platform' => ['nullable', 'string'],
+            'database' => ['nullable', 'string'],
+            'campaign' => ['nullable', 'string'],
+            'force' => ['nullable'],
         ];
     }
 
@@ -37,6 +44,11 @@ final class UploadReportRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
+            // Check if request has body content
+            if ($this->getContent()) {
+                $validator->errors()->add('body', 'This endpoint does not accept body content.');
+            }
+
             // Validate token
             $nightlyToken = config('app.nightly_token');
             if ($this->input('token') !== $nightlyToken) {
@@ -68,5 +80,22 @@ final class UploadReportRequest extends FormRequest
                 'message' => $errors->first(),
             ], $statusCode)
         );
+    }
+
+    /**
+     * Get validated data with proper types.
+     *
+     * @return array<string, mixed>
+     */
+    public function validatedData(): array
+    {
+        $validated = $this->validated();
+
+        return [
+            'platform' => $validated['platform'] ?? null,
+            'database' => $validated['database'] ?? null,
+            'campaign' => $validated['campaign'] ?? null,
+            'force' => $this->has('force'),
+        ];
     }
 }

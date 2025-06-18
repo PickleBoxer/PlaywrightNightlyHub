@@ -74,7 +74,7 @@ final readonly class ReportUploadService
         // Extract information from filename or use provided options
         $platform = $options['platform'] ?? AbstractReportImporter::FILTER_PLATFORMS[0];
         $database = $options['database'] ?? AbstractReportImporter::FILTER_DATABASES[0];
-        $campaign = $options['campaign'] ?? '';
+        $campaign = $options['campaign'] ?? 'unkown'; // TODO: improve this logic to extract campaign from filename
         $version = $options['version'] ?? $this->extractVersionFromFilename($filename);
 
         // Create DateTime from report or use current time

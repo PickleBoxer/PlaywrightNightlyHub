@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ImportController;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UploadController;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Import\UploadReportController;
+use App\Http\Controllers\Import\ImportPlaywrightController;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -31,5 +32,5 @@ require __DIR__.'/auth.php';
 
 // Import routes
 // TODO: move to API routes in the future
-Route::get('/import/report/playwright', [ImportController::class, 'importPlaywright']);
-Route::post('/import/upload', [ImportController::class, 'uploadReport'])->name('upload.report');
+Route::get('/import/playwright', ImportPlaywrightController::class)->name('import.playwright');
+Route::post('/import/upload', UploadReportController::class)->name('upload.report');
