@@ -32,7 +32,6 @@ final class UploadReportRequest extends FormRequest
      * Configure the validator instance.
      *
      * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
      */
     public function withValidator($validator): void
     {
@@ -49,9 +48,8 @@ final class UploadReportRequest extends FormRequest
      * Handle a failed validation attempt.
      *
      * @param  \Illuminate\Contracts\Validation\Validator  $validator
-     * @return void
      *
-     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     * @throws HttpResponseException
      */
     protected function failedValidation($validator): void
     {

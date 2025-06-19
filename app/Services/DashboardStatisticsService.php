@@ -7,12 +7,17 @@ namespace App\Services;
 use App\Models\Execution;
 use Carbon\Carbon;
 
-final class DashboardStatisticsService
+final readonly class DashboardStatisticsService
 {
     /**
      * Calculate dashboard statistics
      *
-     * @return array<string, mixed>
+     * @return array{
+     *     totalReports: int,
+     *     recentReports: int,
+     *     totalTests: int,
+     *     avgSuccessRate: float
+     * }
      */
     public function getStatistics(): array
     {
@@ -21,16 +26,16 @@ final class DashboardStatisticsService
 
         $recentReports = Execution::recent()->count();
 
-        $totalTests = Execution::sum('tests') ?? 0;
+        $totalTests = (int) Execution::sum('tests') ?? 0;
 
         // Calculate average success rate for last 30 days
         $recentExecutions = Execution::where('start_date', '>=', Carbon::now()->subDays(30))
             ->selectRaw('SUM(passes) as total_passes, SUM(tests) as total_tests')
             ->first();
 
-        $avgSuccessRate = 0;
+        $avgSuccessRate = 0.0;
         if ($recentExecutions && $recentExecutions->total_tests > 0) {
-            $avgSuccessRate = ($recentExecutions->total_passes / $recentExecutions->total_tests) * 100;
+            $avgSuccessRate = round(($recentExecutions->total_passes / $recentExecutions->total_tests) * 100, 2);
         }
 
         return [

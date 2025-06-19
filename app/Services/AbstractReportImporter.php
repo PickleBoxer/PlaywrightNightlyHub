@@ -4,22 +4,31 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Contracts\ReportImporter;
+use App\Enums\DatabaseType;
+use App\Enums\PlatformType;
+use App\Enums\TestState;
 use App\Models\Execution;
 use App\Repositories\ExecutionRepository;
 use App\Repositories\TestRepository;
 
-abstract class AbstractReportImporter
+abstract class AbstractReportImporter implements ReportImporter
 {
-    public const REGEX_FILE = '/(\d{4}-\d{2}-\d{2})-(.*)?\.json/';
+    public const REGEX_FILE = '/[0-9]{4}-[0-9]{2}-[0-9]{2}-([^-]*)[-]?(.*)]?\.json/';
 
-    public const FILTER_PLATFORMS = ['chromium', 'firefox', 'edge', 'cli'];
+    /** @var array<string> */
+    private readonly array $platforms;
 
-    public const FILTER_DATABASES = ['mysql', 'postgres'];
+    /** @var array<string> */
+    private readonly array $databases;
 
     public function __construct(
-        protected ExecutionRepository $executionRepository,
-        protected TestRepository $testRepository
-    ) {}
+        protected readonly ExecutionRepository $executionRepository,
+        protected readonly TestRepository $testRepository
+    ) {
+        $this->platforms = array_column(PlatformType::cases(), 'value');
+        $this->databases = array_column(DatabaseType::cases(), 'value');
+    }
 
     protected function extractDataFromFile(string $filename, string $type): string
     {
@@ -42,8 +51,8 @@ abstract class AbstractReportImporter
             if (str_contains($filename, 'modules/ps_emailsubscription')) {
                 return 'ps_emailsubscription';
             }
-            return 'unknown';
-        } elseif ($type === 'file') {
+        }
+        if ($type === 'file') {
             // Get the file name without the campaign part
             $parts = explode('/', $filename);
 
@@ -67,12 +76,13 @@ abstract class AbstractReportImporter
             $execution->start_date
         );
 
-        if (!$executionPrevious instanceof \App\Models\Execution) {
+        if (! $executionPrevious instanceof Execution) {
             return $execution;
         }
 
         $data = $this->testRepository->findComparisonData($execution, $executionPrevious);
-        if ($data === []) {
+
+        if ($data->isEmpty()) {
             return $execution;
         }
 
@@ -81,17 +91,23 @@ abstract class AbstractReportImporter
         $execution->broken_since_last = 0;
         $execution->equal_since_last = 0;
 
-        foreach ($data as $datum) {
-            if ($datum->old_test_state === 'failed' && $datum->current_test_state === 'failed') {
-                $execution->equal_since_last += 1;
-            }
-            if ($datum->old_test_state === 'failed' && $datum->current_test_state !== 'failed') {
-                $execution->fixed_since_last += 1;
-            }
-            if ($datum->old_test_state !== 'failed' && $datum->current_test_state === 'failed') {
-                $execution->broken_since_last += 1;
-            }
-        }
+        // A test is "fixed" if it went from failed to passed
+        $execution->fixed_since_last = $data->filter(function ($datum) {
+            return $datum->old_test_state === TestState::FAILED->value
+                && $datum->current_test_state === TestState::PASSED->value;
+        })->count();
+
+        // A test is "broken" if it went from passed to failed
+        $execution->broken_since_last = $data->filter(function ($datum) {
+            return $datum->old_test_state === TestState::PASSED->value
+                && $datum->current_test_state === TestState::FAILED->value;
+        })->count();
+
+        // A test is "equal" if it's failed in both executions
+        $execution->equal_since_last = $data->filter(function ($datum) {
+            return $datum->old_test_state === TestState::FAILED->value
+                && $datum->current_test_state === TestState::FAILED->value;
+        })->count();
 
         $execution->save();
 

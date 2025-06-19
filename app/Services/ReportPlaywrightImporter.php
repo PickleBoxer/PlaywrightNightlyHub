@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\TestState;
 use App\Models\Execution;
 use App\Models\Suite;
 use App\Models\Test;
@@ -14,6 +15,7 @@ use Str;
 
 final class ReportPlaywrightImporter extends AbstractReportImporter
 {
+    /** @var array<int, string> */
     public const FILTER_CAMPAIGNS = [
         'blockwishlist',
         'ps_cashondelivery',
@@ -96,31 +98,26 @@ final class ReportPlaywrightImporter extends AbstractReportImporter
 
         // Insert tests
         $countFailures = $countPasses = $countPending = $countSkipped = $duration = 0;
-
         foreach ($suite->specs as $spec) {
             $identifier = '';
             $attachments = $spec->tests[0]->results[0]->attachments;
 
-            foreach ($attachments as $attachment) {
-                if ($attachment->name === 'testInfo') {
-                    $info = json_decode((string) $attachment->body);
-                    $identifier = $info->testId ?? '';
-                    break;
-                }
+            if (! empty($attachments[0]) && $attachments[0]->name === 'testIdentifier') {
+                $identifier = base64_decode($attachments[0]->body);
             }
 
-            $state = 'passed';
+            $state = TestState::PASSED->value;
             $errorMessage = $stackTrace = $diff = null;
 
             // Get last result which is the real state
             $result = end($spec->tests[0]->results);
 
-            if ($result->status === 'failed') {
-                $state = 'failed';
+            if ($result->status === TestState::FAILED->value) {
+                $state = TestState::FAILED->value;
                 $errorMessage = $result->error->message ?? null;
                 $stackTrace = $result->error->stack ?? null;
-            } elseif ($result->status === 'skipped') {
-                $state = 'skipped';
+            } elseif ($result->status === TestState::SKIPPED->value) {
+                $state = TestState::SKIPPED->value;
             }
 
             $test = new Test;
@@ -129,7 +126,7 @@ final class ReportPlaywrightImporter extends AbstractReportImporter
             $test->title = $spec->title;
             $test->duration = $spec->tests[0]->results[0]->duration;
             $test->identifier = $identifier;
-            $test->state = $state;
+            $test->state = $spec->tests[0]->results[0]->status;
             $test->error_message = $errorMessage;
             $test->stack_trace = $stackTrace;
             $test->diff = $diff;
@@ -138,13 +135,13 @@ final class ReportPlaywrightImporter extends AbstractReportImporter
 
             $duration += $spec->tests[0]->results[0]->duration;
 
-            if ($state === 'failed') {
+            if ($state === TestState::FAILED->value) {
                 $countFailures++;
                 $executionSuite->has_failures = true;
-            } elseif ($state === 'skipped') {
+            } elseif ($state === TestState::SKIPPED->value) {
                 $countSkipped++;
                 $executionSuite->has_skipped = true;
-            } elseif ($state === 'pending') {
+            } elseif ($state === TestState::PENDING->value) {
                 $countPending++;
                 $executionSuite->has_pending = true;
             } else {

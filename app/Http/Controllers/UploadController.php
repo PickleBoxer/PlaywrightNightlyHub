@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\DatabaseType;
+use App\Enums\PlatformType;
 use App\Http\Requests\WebUploadReportRequest;
-use App\Services\AbstractReportImporter;
 use App\Services\ReportUploadService;
 use Exception;
 use Illuminate\Http\RedirectResponse;
@@ -24,8 +25,8 @@ final class UploadController extends Controller
     public function index(): InertiaResponse
     {
         return Inertia::render('reports/upload', [
-            'platforms' => AbstractReportImporter::FILTER_PLATFORMS,
-            'databases' => AbstractReportImporter::FILTER_DATABASES,
+            'platforms' => PlatformType::cases(),
+            'databases' => DatabaseType::cases(),
             'campaigns' => \App\Services\ReportPlaywrightImporter::FILTER_CAMPAIGNS,
         ]);
     }

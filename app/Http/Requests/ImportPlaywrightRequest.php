@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Response;
 
-class ImportPlaywrightRequest extends FormRequest
+final class ImportPlaywrightRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -39,7 +39,6 @@ class ImportPlaywrightRequest extends FormRequest
      * Configure the validator instance.
      *
      * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
      */
     public function withValidator($validator): void
     {
@@ -58,12 +57,28 @@ class ImportPlaywrightRequest extends FormRequest
     }
 
     /**
+     * Get validated data with proper types.
+     *
+     * @return array<string, mixed>
+     */
+    public function validatedData(): array
+    {
+        $validated = $this->validated();
+
+        return [
+            'platform' => $validated['platform'] ?? null,
+            'database' => $validated['database'] ?? null,
+            'campaign' => $validated['campaign'] ?? null,
+            'force' => $this->has('force'),
+        ];
+    }
+
+    /**
      * Handle a failed validation attempt.
      *
      * @param  \Illuminate\Contracts\Validation\Validator  $validator
-     * @return void
      *
-     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     * @throws HttpResponseException
      */
     protected function failedValidation($validator): void
     {
@@ -80,22 +95,5 @@ class ImportPlaywrightRequest extends FormRequest
                 'message' => $errors->first(),
             ], $statusCode)
         );
-    }
-
-    /**
-     * Get validated data with proper types.
-     *
-     * @return array<string, mixed>
-     */
-    public function validatedData(): array
-    {
-        $validated = $this->validated();
-
-        return [
-            'platform' => $validated['platform'] ?? null,
-            'database' => $validated['database'] ?? null,
-            'campaign' => $validated['campaign'] ?? null,
-            'force' => $this->has('force'),
-        ];
     }
 }

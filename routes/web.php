@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Import\ImportPlaywrightController;
+use App\Http\Controllers\Import\UploadReportController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UploadController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Import\UploadReportController;
-use App\Http\Controllers\Import\ImportPlaywrightController;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('welcome');

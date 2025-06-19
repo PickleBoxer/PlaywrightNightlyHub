@@ -4,33 +4,42 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Contracts\ReportProcessor;
+use App\Enums\DatabaseType;
+use App\Enums\PlatformType;
+use App\Exceptions\ReportProcessingException;
 use App\Models\Execution;
 use App\Repositories\ExecutionRepository;
 use DateTime;
-use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
 use function str_replace;
 
-final readonly class ReportUploadService
+final readonly class ReportUploadService implements ReportProcessor
 {
     private string $reportPath;
 
     public function __construct(
         private ExecutionRepository $executionRepository,
-        private ReportPlaywrightImporter $playwrightImporter
+        private ReportPlaywrightImporter $playwrightImporter,
+        ?string $reportPath = null
     ) {
-        $this->reportPath = config('app.nightly_report_path', 'reports');
+        $this->reportPath = $reportPath ?? config('app.nightly_report_path', 'reports');
     }
 
     /**
      * Upload and store a report file
      *
      * @param  array<string, mixed>  $options
-     * @return array<string, mixed>
+     * @return array{
+     *     filename: string,
+     *     path: string,
+     *     size: int,
+     *     mime: string|null
+     * }
      *
-     * @throws Exception
+     * @throws ReportProcessingException
      */
     public function uploadReport(UploadedFile $file, array $options = []): array
     {
@@ -41,7 +50,7 @@ final readonly class ReportUploadService
         $path = Storage::putFileAs($this->reportPath, $file, $filename);
 
         if (! $path) {
-            throw new Exception('Failed to store the uploaded file.');
+            throw new ReportProcessingException('Failed to store the uploaded file.');
         }
 
         return [
@@ -57,24 +66,24 @@ final readonly class ReportUploadService
      *
      * @param  array<string, mixed>  $options
      *
-     * @throws Exception
+     * @throws ReportProcessingException
      */
     public function processReport(string $filename, array $options = []): Execution
     {
         $fileContent = Storage::get($this->reportPath.'/'.$filename);
         if (! $fileContent) {
-            throw new Exception(sprintf('Could not read the file %s', $filename));
+            throw ReportProcessingException::fileNotReadable($filename);
         }
 
         $jsonContent = json_decode($fileContent);
         if (! $jsonContent) {
-            throw new Exception(sprintf('Could not parse the file %s', $filename));
+            throw ReportProcessingException::invalidJson($filename);
         }
 
         // Extract information from filename or use provided options
-        $platform = $options['platform'] ?? AbstractReportImporter::FILTER_PLATFORMS[0];
-        $database = $options['database'] ?? AbstractReportImporter::FILTER_DATABASES[0];
-        $campaign = $options['campaign'] ?? 'unkown'; // TODO: improve this logic to extract campaign from filename
+        $platform = $options['platform'] ?? PlatformType::CHROMIUM->value;
+        $database = $options['database'] ?? DatabaseType::MYSQL->value;
+        $campaign = $options['campaign'] ?? 'unknown';
         $version = $options['version'] ?? $this->extractVersionFromFilename($filename);
 
         // Create DateTime from report or use current time
@@ -96,14 +105,13 @@ final readonly class ReportUploadService
                 $startDate->format('Y-m-d')
             )
         ) {
-            throw new Exception(sprintf(
-                'A similar entry was found (criteria: version %s, platform %s, campaign %s, database %s, date %s).',
+            throw ReportProcessingException::similarEntryExists(
                 $version,
                 $platform,
                 $campaign,
                 $database,
                 $startDate->format('Y-m-d')
-            ));
+            );
         }
 
         // Import the report using the playwright importer
@@ -121,22 +129,18 @@ final readonly class ReportUploadService
     /**
      * Extract version from filename using regex
      *
-     * @throws Exception
+     * @throws ReportProcessingException
      */
     private function extractVersionFromFilename(string $filename): string
     {
         preg_match(AbstractReportImporter::REGEX_FILE, $filename, $matchesVersion);
         if (! isset($matchesVersion[1])) {
-            throw new Exception('Could not retrieve version from filename');
+            throw ReportProcessingException::fileNotReadable($filename);
         }
 
         $version = str_replace('_', ' ', $matchesVersion[1]);
         if (mb_strlen($version) < 1) {
-            throw new Exception(sprintf(
-                'Version found not correct (%s) from filename %s',
-                $version,
-                $filename
-            ));
+            throw ReportProcessingException::invalidVersion($version, $filename);
         }
 
         return $version;

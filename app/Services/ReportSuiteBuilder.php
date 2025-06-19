@@ -218,7 +218,7 @@ final class ReportSuiteBuilder
         ];
 
         if ($this->filterEmptyArrays) {
-            return array_filter($data, fn($value): bool => ! is_array($value) || $value !== []);
+            return array_filter($data, fn ($value): bool => ! is_array($value) || $value !== []);
         }
 
         return $data;
