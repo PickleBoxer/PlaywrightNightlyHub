@@ -1,11 +1,14 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/react-starter-kit",
+    "name": "pickleboxer/playwright-nightly-hub",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "A modern web application for storing, analyzing, and visualizing Playwright test reports.",
     "keywords": [
         "laravel",
-        "framework"
+        "playwright",
+        "testing",
+        "reports",
+        "dashboard"
     ],
     "license": "MIT",
     "require": {
