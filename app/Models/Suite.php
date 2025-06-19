@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class Suite extends Model
 {
-    use HasFactory;
+    //use HasFactory;
 
     protected $fillable = [
         'execution_id',
@@ -44,22 +44,34 @@ final class Suite extends Model
         'insertion_date' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<Execution, $this>
+     */
     public function execution(): BelongsTo
     {
         return $this->belongsTo(Execution::class);
     }
 
+    /**
+     * @return HasMany<Test, $this>
+     */
     public function tests(): HasMany
     {
         return $this->hasMany(Test::class);
     }
 
-    public function childSuites()
+    /**
+     * @return HasMany<Suite, $this>
+     */
+    public function childSuites(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
     }
 
-    public function parentSuite()
+    /**
+     * @return BelongsTo<Suite, $this>
+     */
+    public function parentSuite(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
     }

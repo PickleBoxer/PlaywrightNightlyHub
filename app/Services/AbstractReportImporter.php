@@ -11,6 +11,7 @@ use App\Enums\TestState;
 use App\Models\Execution;
 use App\Repositories\ExecutionRepository;
 use App\Repositories\TestRepository;
+use stdClass;
 
 abstract class AbstractReportImporter implements ReportImporter
 {
@@ -70,6 +71,7 @@ abstract class AbstractReportImporter implements ReportImporter
             return $execution;
         }
 
+        /** @var \Illuminate\Support\Collection<int, stdClass> $data */
         $data = $this->testRepository->findComparisonData($execution, $executionPrevious);
 
         if ($data->isEmpty()) {
@@ -82,16 +84,25 @@ abstract class AbstractReportImporter implements ReportImporter
         $execution->equal_since_last = 0;
 
         // A test is "fixed" if it went from failed to passed
-        $execution->fixed_since_last = $data->filter(fn($datum): bool => $datum->old_test_state === TestState::FAILED->value
-            && $datum->current_test_state === TestState::PASSED->value)->count();
+        $execution->fixed_since_last = $data->filter(
+            /** @param stdClass $datum */
+            fn($datum): bool => $datum->old_test_state === TestState::FAILED->value
+                && $datum->current_test_state === TestState::PASSED->value
+        )->count();
 
         // A test is "broken" if it went from passed to failed
-        $execution->broken_since_last = $data->filter(fn($datum): bool => $datum->old_test_state === TestState::PASSED->value
-            && $datum->current_test_state === TestState::FAILED->value)->count();
+        $execution->broken_since_last = $data->filter(
+            /** @param stdClass $datum */
+            fn($datum): bool => $datum->old_test_state === TestState::PASSED->value
+                && $datum->current_test_state === TestState::FAILED->value
+        )->count();
 
         // A test is "equal" if it's failed in both executions
-        $execution->equal_since_last = $data->filter(fn($datum): bool => $datum->old_test_state === TestState::FAILED->value
-            && $datum->current_test_state === TestState::FAILED->value)->count();
+        $execution->equal_since_last = $data->filter(
+            /** @param stdClass $datum */
+            fn($datum): bool => $datum->old_test_state === TestState::FAILED->value
+                && $datum->current_test_state === TestState::FAILED->value
+        )->count();
 
         $execution->save();
 

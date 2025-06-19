@@ -43,6 +43,9 @@ final class ExecutionRepository
             ->first();
     }
 
+    /**
+     * @return array<string>
+     */
     public function findAllVersions(): array
     {
         return array_merge(
@@ -56,6 +59,9 @@ final class ExecutionRepository
         );
     }
 
+    /**
+     * @param array<string, string> $criteria
+     */
     public function countByCriteria(array $criteria): int
     {
         $query = Execution::query();

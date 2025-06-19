@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 final class TestRepository
 {
     /**
-     * @return Collection<Test>
+     * @return Collection<int, Test>
      */
     public function findComparisonData(Execution $current, Execution $previous): Collection
     {

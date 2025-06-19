@@ -146,6 +146,9 @@ final class ReportSuiteBuilder
         return $this->result;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function buildSingleSuite(Suite $suite): array
     {
         $this->suites = [];
@@ -173,6 +176,9 @@ final class ReportSuiteBuilder
         return $this->formatSuite($suite);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function formatSuite(Suite $suite): array
     {
         $suites = [];
@@ -224,6 +230,9 @@ final class ReportSuiteBuilder
         return $data;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function formatTest(Test $test): array
     {
         return [

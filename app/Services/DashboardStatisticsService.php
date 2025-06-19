@@ -26,9 +26,10 @@ final readonly class DashboardStatisticsService
 
         $recentReports = Execution::recent()->count();
 
-        $totalTests = (int) Execution::sum('tests') ?? 0;
+        $totalTests = (int) Execution::sum('tests');
 
         // Calculate average success rate for last 30 days
+        /** @var object{total_passes: int, total_tests: int}|null */
         $recentExecutions = Execution::where('start_date', '>=', Carbon::now()->subDays(30))
             ->selectRaw('SUM(passes) as total_passes, SUM(tests) as total_tests')
             ->first();

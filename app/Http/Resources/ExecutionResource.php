@@ -7,7 +7,11 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Execution;
 
+/**
+ * @mixin Execution
+ */
 final class ExecutionResource extends JsonResource
 {
     /**

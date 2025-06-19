@@ -7,7 +7,11 @@ namespace App\Http\Resources;
 use App\Services\ReportSuiteBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\Execution;
 
+/**
+ * @mixin Execution
+ */
 final class DetailedExecutionResource extends JsonResource
 {
     /**
