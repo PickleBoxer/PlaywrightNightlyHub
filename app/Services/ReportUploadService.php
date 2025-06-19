@@ -75,9 +75,9 @@ final readonly class ReportUploadService implements ReportProcessor
             // Using Storage::json() which automatically decodes as array
             // This is more efficient for large files as it combines reading and decoding
             $jsonContent = Storage::json($this->reportPath.'/'.$filename);
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             throw ReportProcessingException::invalidJson($filename);
-        } catch (\Illuminate\Contracts\Filesystem\FileNotFoundException $e) {
+        } catch (\Illuminate\Contracts\Filesystem\FileNotFoundException) {
             throw ReportProcessingException::fileNotReadable($filename);
         }
 

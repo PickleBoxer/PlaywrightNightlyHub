@@ -11,7 +11,6 @@ use App\Http\Resources\ExecutionCollection;
 use App\Models\Execution;
 use App\Repositories\ExecutionRepository;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -70,7 +69,9 @@ final class ReportController extends Controller
         return Storage::download($path, $execution->filename, [
             'Content-Type' => 'application/json',
         ]);
-    }    public function show(int $idReport, ReportShowRequest $request): InertiaResponse
+    }
+
+    public function show(int $idReport, ReportShowRequest $request): InertiaResponse
     {
         $execution = Execution::findOrFail($idReport);
 

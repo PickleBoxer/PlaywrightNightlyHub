@@ -9,7 +9,6 @@ use App\Http\Controllers\Import\UploadReportController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 

@@ -18,7 +18,7 @@ final class HomeController extends Controller
     public function index(): InertiaResponse
     {
         // Get stats for the home page using cache to improve performance
-        $stats = Cache::remember('home_page_stats', now()->addMinutes(30), function () {
+        $stats = Cache::remember('home_page_stats', now()->addMinutes(30), function (): array {
             // Get all stats in a single efficient query
             $basicStats = DB::table('executions')
                 ->selectRaw('COUNT(*) as total_reports')
@@ -37,15 +37,13 @@ final class HomeController extends Controller
         });
 
         // Get recent reports for the public view
-        $reports = Cache::remember('home_page_reports', now()->addMinutes(15), function () {
-            return Execution::select([
-                    'id', 'filename', 'version', 'campaign', 'platform', 'database',
-                    'start_date', 'duration', 'tests', 'passes', 'failures', 'pending', 'skipped',
-                ])
-                ->orderBy('start_date', 'desc')
-                ->limit(5)
-                ->get();
-        });
+        $reports = Cache::remember('home_page_reports', now()->addMinutes(15), fn () => Execution::select([
+            'id', 'filename', 'version', 'campaign', 'platform', 'database',
+            'start_date', 'duration', 'tests', 'passes', 'failures', 'pending', 'skipped',
+        ])
+            ->orderBy('start_date', 'desc')
+            ->limit(5)
+            ->get());
 
         return Inertia::render('home', [
             'reports' => $reports,
