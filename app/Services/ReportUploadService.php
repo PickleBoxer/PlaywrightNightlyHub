@@ -70,14 +70,14 @@ final readonly class ReportUploadService implements ReportProcessor
      */
     public function processReport(string $filename, array $options = []): Execution
     {
-        $fileContent = Storage::get($this->reportPath.'/'.$filename);
-        if (! $fileContent) {
-            throw ReportProcessingException::fileNotReadable($filename);
-        }
-
-        $jsonContent = json_decode($fileContent);
-        if (! $jsonContent) {
+        try {
+            // Using Storage::json() which automatically decodes as array
+            // This is more efficient for large files as it combines reading and decoding
+            $jsonContent = Storage::json($this->reportPath.'/'.$filename);
+        } catch (\JsonException $e) {
             throw ReportProcessingException::invalidJson($filename);
+        } catch (\Illuminate\Contracts\Filesystem\FileNotFoundException $e) {
+            throw ReportProcessingException::fileNotReadable($filename);
         }
 
         // Extract information from filename or use provided options
@@ -87,7 +87,9 @@ final readonly class ReportUploadService implements ReportProcessor
         $version = $options['version'] ?? $this->extractVersionFromFilename($filename);
 
         // Create DateTime from report or use current time
-        $startDateString = $jsonContent->stats->start ?? $jsonContent->stats->startTime ?? date(DateTime::RFC3339_EXTENDED);
+        $startDateString = $jsonContent['stats']['start']
+            ?? $jsonContent['stats']['startTime']
+            ?? date(DateTime::RFC3339_EXTENDED);
         $startDate = DateTime::createFromFormat(DateTime::RFC3339_EXTENDED, $startDateString);
 
         if ($startDate === false) {

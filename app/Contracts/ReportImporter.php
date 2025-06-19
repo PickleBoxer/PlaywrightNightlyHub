@@ -16,6 +16,6 @@ interface ReportImporter
         string $campaign,
         string $version,
         DateTime $startDate,
-        object $jsonContent,
+        array $jsonContent,
     ): Execution;
 }
