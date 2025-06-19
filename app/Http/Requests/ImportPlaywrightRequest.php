@@ -42,7 +42,7 @@ final class ImportPlaywrightRequest extends FormRequest
      */
     public function withValidator($validator): void
     {
-        $validator->after(function ($validator) {
+        $validator->after(function ($validator): void {
             // Check if request has body content
             if ($this->getContent()) {
                 $validator->errors()->add('body', 'This endpoint does not accept body content.');

@@ -14,20 +14,10 @@ use App\Repositories\TestRepository;
 
 abstract class AbstractReportImporter implements ReportImporter
 {
-    public const REGEX_FILE = '/[0-9]{4}-[0-9]{2}-[0-9]{2}-([^-]*)[-]?(.*)]?\.json/';
+    public const REGEX_FILE = '/\d{4}-\d{2}-\d{2}-([^-]*)[-]?(.*)]?\.json/';
 
-    /** @var array<string> */
-    private readonly array $platforms;
-
-    /** @var array<string> */
-    private readonly array $databases;
-
-    public function __construct(
-        protected readonly ExecutionRepository $executionRepository,
-        protected readonly TestRepository $testRepository
-    ) {
-        $this->platforms = array_column(PlatformType::cases(), 'value');
-        $this->databases = array_column(DatabaseType::cases(), 'value');
+    public function __construct(protected readonly ExecutionRepository $executionRepository, protected readonly TestRepository $testRepository)
+    {
     }
 
     protected function extractDataFromFile(string $filename, string $type): string
@@ -92,22 +82,16 @@ abstract class AbstractReportImporter implements ReportImporter
         $execution->equal_since_last = 0;
 
         // A test is "fixed" if it went from failed to passed
-        $execution->fixed_since_last = $data->filter(function ($datum) {
-            return $datum->old_test_state === TestState::FAILED->value
-                && $datum->current_test_state === TestState::PASSED->value;
-        })->count();
+        $execution->fixed_since_last = $data->filter(fn($datum): bool => $datum->old_test_state === TestState::FAILED->value
+            && $datum->current_test_state === TestState::PASSED->value)->count();
 
         // A test is "broken" if it went from passed to failed
-        $execution->broken_since_last = $data->filter(function ($datum) {
-            return $datum->old_test_state === TestState::PASSED->value
-                && $datum->current_test_state === TestState::FAILED->value;
-        })->count();
+        $execution->broken_since_last = $data->filter(fn($datum): bool => $datum->old_test_state === TestState::PASSED->value
+            && $datum->current_test_state === TestState::FAILED->value)->count();
 
         // A test is "equal" if it's failed in both executions
-        $execution->equal_since_last = $data->filter(function ($datum) {
-            return $datum->old_test_state === TestState::FAILED->value
-                && $datum->current_test_state === TestState::FAILED->value;
-        })->count();
+        $execution->equal_since_last = $data->filter(fn($datum): bool => $datum->old_test_state === TestState::FAILED->value
+            && $datum->current_test_state === TestState::FAILED->value)->count();
 
         $execution->save();
 

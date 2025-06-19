@@ -54,7 +54,7 @@ final class Execution extends Model
     #[Scope]
     protected function platform(Builder $query, ?string $platform): void
     {
-        if ($platform) {
+        if ($platform !== null && $platform !== '' && $platform !== '0') {
             $query->where('platform', $platform);
         }
     }
@@ -65,7 +65,7 @@ final class Execution extends Model
     #[Scope]
     protected function campaign(Builder $query, ?string $campaign): void
     {
-        if ($campaign) {
+        if ($campaign !== null && $campaign !== '' && $campaign !== '0') {
             $query->where('campaign', $campaign);
         }
     }
@@ -76,7 +76,7 @@ final class Execution extends Model
     #[Scope]
     protected function version(Builder $query, ?string $version): void
     {
-        if ($version) {
+        if ($version !== null && $version !== '' && $version !== '0') {
             $query->where('version', $version);
         }
     }
@@ -87,7 +87,7 @@ final class Execution extends Model
     #[Scope]
     protected function search(Builder $query, ?string $search): void
     {
-        if ($search) {
+        if ($search !== null && $search !== '' && $search !== '0') {
             $query->where(function ($q) use ($search): void {
                 $q->where('version', 'like', "%{$search}%")
                     ->orWhere('campaign', 'like', "%{$search}%")

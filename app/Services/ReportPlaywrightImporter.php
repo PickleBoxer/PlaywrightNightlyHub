@@ -103,7 +103,7 @@ final class ReportPlaywrightImporter extends AbstractReportImporter
             $attachments = $spec->tests[0]->results[0]->attachments;
 
             if (! empty($attachments[0]) && $attachments[0]->name === 'testIdentifier') {
-                $identifier = base64_decode($attachments[0]->body);
+                $identifier = base64_decode((string) $attachments[0]->body);
             }
 
             $state = TestState::PASSED->value;

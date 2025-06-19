@@ -35,7 +35,7 @@ final class UploadReportRequest extends FormRequest
      */
     public function withValidator($validator): void
     {
-        $validator->after(function ($validator) {
+        $validator->after(function ($validator): void {
             // Validate token
             $nightlyToken = config('app.nightly_token');
             if ($this->input('token') !== $nightlyToken) {
