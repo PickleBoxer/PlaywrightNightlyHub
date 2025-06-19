@@ -11,6 +11,7 @@ use App\Http\Resources\ExecutionCollection;
 use App\Models\Execution;
 use App\Repositories\ExecutionRepository;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -84,6 +85,36 @@ final class ReportController extends Controller
 
         return Inertia::render('reports/show', [
             'report' => $resource->resolve($request),
+        ]);
+    }
+    
+    /**
+     * Display the welcome page with public reports and stats
+     */
+    public function welcome(): InertiaResponse
+    {
+        // Get stats for the welcome page
+        $stats = [
+            'totalReports' => Execution::count(),
+            'totalTests' => Execution::sum('tests'),
+            'avgSuccessRate' => Execution::where('tests', '>', 0)
+                ->selectRaw('COALESCE(AVG(passes * 100.0 / tests), 0) as success_rate')
+                ->value('success_rate'),
+            'recentReports' => Execution::where('start_date', '>=', now()->subDays(7))->count(),
+        ];
+        
+        // Get recent reports for the public view
+        $reports = Execution::select([
+                'id', 'filename', 'version', 'campaign', 'platform', 'database',
+                'start_date', 'duration', 'tests', 'passes', 'failures', 'pending', 'skipped',
+            ])
+            ->orderBy('start_date', 'desc')
+            ->limit(5)
+            ->get();
+            
+        return Inertia::render('welcome', [
+            'reports' => $reports,
+            'stats' => $stats,
         ]);
     }
 }
