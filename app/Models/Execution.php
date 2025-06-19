@@ -7,13 +7,13 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
-//use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class Execution extends Model
 {
-    //use HasFactory;
+    // use HasFactory;
 
     protected $fillable = [
         'ref',
@@ -54,7 +54,7 @@ final class Execution extends Model
     /**
      * Scope a query to filter by platform.
      *
-     * @param Builder<$this> $query
+     * @param  Builder<$this>  $query
      */
     #[Scope]
     protected function platform(Builder $query, ?string $platform): void
@@ -67,7 +67,7 @@ final class Execution extends Model
     /**
      * Scope a query to filter by campaign.
      *
-     * @param Builder<$this> $query
+     * @param  Builder<$this>  $query
      */
     #[Scope]
     protected function campaign(Builder $query, ?string $campaign): void
@@ -80,7 +80,7 @@ final class Execution extends Model
     /**
      * Scope a query to filter by version.
      *
-     * @param Builder<$this> $query
+     * @param  Builder<$this>  $query
      */
     #[Scope]
     protected function version(Builder $query, ?string $version): void
@@ -93,7 +93,7 @@ final class Execution extends Model
     /**
      * Scope a query to search version, campaign, platform, or filename.
      *
-     * @param Builder<$this> $query
+     * @param  Builder<$this>  $query
      */
     #[Scope]
     protected function search(Builder $query, ?string $search): void
@@ -111,7 +111,7 @@ final class Execution extends Model
     /**
      * Scope a query to recent reports (within the last n days).
      *
-     * @param Builder<$this> $query
+     * @param  Builder<$this>  $query
      */
     #[Scope]
     protected function recent(Builder $query, ?int $days = 7): void

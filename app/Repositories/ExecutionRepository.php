@@ -60,7 +60,7 @@ final class ExecutionRepository
     }
 
     /**
-     * @param array<string, string> $criteria
+     * @param  array<string, string>  $criteria
      */
     public function countByCriteria(array $criteria): int
     {

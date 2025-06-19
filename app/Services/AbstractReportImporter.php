@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Contracts\ReportImporter;
-use App\Enums\DatabaseType;
-use App\Enums\PlatformType;
 use App\Enums\TestState;
 use App\Models\Execution;
 use App\Repositories\ExecutionRepository;
@@ -17,9 +15,7 @@ abstract class AbstractReportImporter implements ReportImporter
 {
     public const REGEX_FILE = '/\d{4}-\d{2}-\d{2}-([^-]*)[-]?(.*)]?\.json/';
 
-    public function __construct(protected readonly ExecutionRepository $executionRepository, protected readonly TestRepository $testRepository)
-    {
-    }
+    public function __construct(protected readonly ExecutionRepository $executionRepository, protected readonly TestRepository $testRepository) {}
 
     protected function extractDataFromFile(string $filename, string $type): string
     {
@@ -86,21 +82,21 @@ abstract class AbstractReportImporter implements ReportImporter
         // A test is "fixed" if it went from failed to passed
         $execution->fixed_since_last = $data->filter(
             /** @param stdClass $datum */
-            fn($datum): bool => $datum->old_test_state === TestState::FAILED->value
+            fn ($datum): bool => $datum->old_test_state === TestState::FAILED->value
                 && $datum->current_test_state === TestState::PASSED->value
         )->count();
 
         // A test is "broken" if it went from passed to failed
         $execution->broken_since_last = $data->filter(
             /** @param stdClass $datum */
-            fn($datum): bool => $datum->old_test_state === TestState::PASSED->value
+            fn ($datum): bool => $datum->old_test_state === TestState::PASSED->value
                 && $datum->current_test_state === TestState::FAILED->value
         )->count();
 
         // A test is "equal" if it's failed in both executions
         $execution->equal_since_last = $data->filter(
             /** @param stdClass $datum */
-            fn($datum): bool => $datum->old_test_state === TestState::FAILED->value
+            fn ($datum): bool => $datum->old_test_state === TestState::FAILED->value
                 && $datum->current_test_state === TestState::FAILED->value
         )->count();
 

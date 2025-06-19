@@ -13,6 +13,7 @@ use App\Repositories\ExecutionRepository;
 use DateTime;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use JsonException;
 
 use function str_replace;
 
@@ -74,7 +75,7 @@ final readonly class ReportUploadService implements ReportProcessor
             // Using Storage::json() which automatically decodes as array
             // This is more efficient for large files as it combines reading and decoding
             $jsonContent = Storage::json($this->reportPath.'/'.$filename);
-        } catch (\JsonException $e) {
+        } catch (JsonException $e) {
             throw ReportProcessingException::invalidJson($filename);
         } catch (\Illuminate\Contracts\Filesystem\FileNotFoundException $e) {
             throw ReportProcessingException::fileNotReadable($filename);

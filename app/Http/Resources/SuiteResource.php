@@ -58,8 +58,8 @@ final class SuiteResource extends JsonResource
 
             // Relationships
             'tests' => TestResource::collection($this->whenLoaded('tests')),
-            'child_suites' => SuiteResource::collection($this->whenLoaded('childSuites')),
-            'parent_suite' => new SuiteResource($this->whenLoaded('parentSuite')),
+            'child_suites' => self::collection($this->whenLoaded('childSuites')),
+            'parent_suite' => new self($this->whenLoaded('parentSuite')),
         ];
     }
 }
