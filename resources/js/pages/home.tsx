@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AppearanceToggleDropdown from '@/components/appearance-dropdown';
-import { 
-    FileText, 
-    Clock, 
-    CheckCircle, 
-    XCircle, 
-    AlertCircle, 
+import {
+    FileText,
+    Clock,
+    CheckCircle,
+    XCircle,
+    AlertCircle,
     BarChart3,
     Calendar,
     Database,
@@ -98,7 +98,7 @@ export default function Welcome({ reports = [], stats = { totalReports: 0, total
                         </nav>
                     </div>
                 </header>
-                
+
                 <main className="container mx-auto px-4 py-8">
                     {/* Hero section */}
                     <div className="mb-12 text-center">
@@ -240,7 +240,7 @@ export default function Welcome({ reports = [], stats = { totalReports: 0, total
                         </CardContent>
                     </Card>
                 </main>
-                
+
                 {/* Features section */}
                 <section className="bg-muted py-12">
                     <div className="container mx-auto px-4">
@@ -259,7 +259,7 @@ export default function Welcome({ reports = [], stats = { totalReports: 0, total
                                     </p>
                                 </CardContent>
                             </Card>
-                            
+
                             <Card>
                                 <CardHeader>
                                     <div className="bg-primary/10 w-10 h-10 rounded-lg flex items-center justify-center mb-2">
@@ -273,7 +273,7 @@ export default function Welcome({ reports = [], stats = { totalReports: 0, total
                                     </p>
                                 </CardContent>
                             </Card>
-                            
+
                             <Card>
                                 <CardHeader>
                                     <div className="bg-primary/10 w-10 h-10 rounded-lg flex items-center justify-center mb-2">
@@ -290,7 +290,7 @@ export default function Welcome({ reports = [], stats = { totalReports: 0, total
                         </div>
                     </div>
                 </section>
-                
+
                 {/* CTA Section */}
                 <section className="py-16 container mx-auto px-4 text-center">
                     <div className="max-w-2xl mx-auto">
@@ -312,7 +312,7 @@ export default function Welcome({ reports = [], stats = { totalReports: 0, total
                         </div>
                     </div>
                 </section>
-                
+
                 {/* Footer */}
                 <footer className="border-t py-8">
                     <div className="container mx-auto px-4">
