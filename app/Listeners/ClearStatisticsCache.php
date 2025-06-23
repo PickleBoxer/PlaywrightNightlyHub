@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Listeners;
 
+use App\Contracts\ListenerContract;
 use App\Events\ExecutionCreated;
 use Illuminate\Support\Facades\Cache;
 
-final class ClearStatisticsCache
+final class ClearStatisticsCache implements ListenerContract
 {
     /**
      * Handle the event.
