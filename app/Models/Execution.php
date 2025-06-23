@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Events\ExecutionCreated;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,6 +15,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 final class Execution extends Model
 {
     // use HasFactory;
+
+    /**
+     * The event map for the model.
+     *
+     * @var array<string, string>
+     */
+    protected $dispatchesEvents = [
+        'created' => ExecutionCreated::class,
+    ];
 
     protected $fillable = [
         'ref',
