@@ -8,7 +8,7 @@ use App\Models\Execution;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-final class ExecutionCreated
+final readonly class ExecutionCreated
 {
     use Dispatchable, SerializesModels;
 
@@ -16,6 +16,6 @@ final class ExecutionCreated
      * Create a new event instance.
      */
     public function __construct(
-        public readonly Execution $execution
+        public Execution $execution
     ) {}
 }
