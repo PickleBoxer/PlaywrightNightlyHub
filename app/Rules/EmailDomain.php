@@ -12,12 +12,12 @@ final class EmailDomain implements ValidationRule
     /**
      * The allowed email domain.
      */
-    protected string $allowedDomain = 'aer-wsale.com';
+    private string $allowedDomain = 'aer-wsale.com';
 
     /**
      * Run the validation rule.
      *
-     * @param  \Closure(string, ?string=): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param  Closure(string, ?string=): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {

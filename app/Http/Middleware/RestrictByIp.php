@@ -13,12 +13,12 @@ final class RestrictByIp
     /**
      * The allowed IP address.
      */
-    protected string $allowedIp = '89.212.6.13';
+    private string $allowedIp = '89.212.6.13';
 
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
