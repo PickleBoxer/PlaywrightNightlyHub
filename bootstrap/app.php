@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\RestrictByIp;
+use Illuminate\Foundation\Application;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
-use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
@@ -18,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
+
+        // Apply IP restriction to all routes
+        // $middleware->prepend(RestrictByIp::class);
 
         $middleware->web(append: [
             HandleAppearance::class,
